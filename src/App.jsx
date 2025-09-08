@@ -1,10 +1,13 @@
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { theme } from "./theme";
+import DashboardPage from "./components/DashboardPage";
+
 function App() {
   return (
-    <>
-      <div>
-        <h1>Dashboard</h1>
-      </div>
-    </>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <DashboardPage />
+    </ThemeProvider>
   );
 }
 
