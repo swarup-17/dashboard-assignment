@@ -1,13 +1,11 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { theme } from "./theme";
 import DashboardPage from "./components/DashboardPage";
+import { WidgetProvider } from "./context/WidgetContext";
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <WidgetProvider>
       <DashboardPage />
-    </ThemeProvider>
+    </WidgetProvider>
   );
 }
 

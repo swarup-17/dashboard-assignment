@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useWidget } from "../context/WidgetContext";
 import {
   AppBar,
   Toolbar,
@@ -5,99 +7,127 @@ import {
   InputBase,
   Box,
   Breadcrumbs,
-  Link,
   IconButton,
   Avatar,
+  Drawer,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   Search,
-  HelpOutline,
-  KeyboardArrowDown,
   AutoAwesome,
   NotificationsActive,
+  Close,
 } from "@mui/icons-material";
-import { theme } from "../theme";
 
 const Navbar = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const { state, dispatch } = useWidget();
+  const { searchTerm } = state;
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleToggleDrawer = (open) => () => setIsDrawerOpen(open);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      dispatch({ type: "SET_SEARCH_TERM", payload: localSearch });
+    }, 200);
+
+    return () => clearTimeout(handler);
+  }, [localSearch, dispatch]);
+
   return (
     <>
       <AppBar
-        aria-label="navbar"
         position="static"
         sx={{
           backgroundColor: "#FFFFFF",
-          color: "#212121",
+          color: "text.secondary",
           borderBottom: "1px solid #E0E0E0",
         }}
         elevation={0}
       >
         <Toolbar variant="dense">
-          <Breadcrumbs aria-label="breadcrumb" separator=">">
-            <Link underline="hover" color="text.secondary" href="#">
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            separator="›"
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
+            <Typography underline="hover" color="text.secondary">
               Home
-            </Link>
+            </Typography>
             <Typography color="primary" sx={{ fontWeight: "600" }}>
               Dashboard V2
             </Typography>
           </Breadcrumbs>
-          <Box sx={{ flexGrow: 1 }} />{" "}
-          <Box
+
+          <Typography
+            variant="h6"
+            color="primary"
             sx={{
-              position: "relative",
-              borderRadius: "10px",
-              border: "1px solid",
-              borderColor: "#a3bad4ff",
-              backgroundColor: theme.palette.background.default,
-              "&:focus": {
-                border: "2px solid",
-              },
-              marginRight: 5,
-              width: { sm: "auto", md: "400px" },
-              height: "40px",
-              display: "flex",
-              alignItems: "center",
+              display: { xs: "block", sm: "none" },
+              fontWeight: "600",
+              fontSize: { xs: "14px", sm: "14px" },
             }}
           >
+            Dashboard V2
+          </Typography>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {!isMobile ? (
             <Box
               sx={{
-                padding: "0 10px",
-                height: "100%",
+                position: "relative",
+                borderRadius: "8px",
+                border: "1px solid grey",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
+                width: "300px",
+                height: "40px",
               }}
             >
-              <Search fontSize="small" />
+              <Search sx={{ color: "text.secondary", ml: 1 }} />
+              <InputBase
+                placeholder="Search anything..."
+                sx={{ ml: 1, flex: 1, pr: 2 }}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+              />
             </Box>
-            <InputBase placeholder={"Search here..."} sx={{ flex: 1 }} />
-          </Box>
+          ) : (
+            <IconButton color="inherit" onClick={handleToggleDrawer(true)}>
+              <Search />
+            </IconButton>
+          )}
+
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              cursor: "pointer",
-              marginRight: 4,
+              gap: { xs: 0.5, md: 2 },
+              ml: { xs: 2, md: 9 },
             }}
           >
-            <Typography variant="subtitle2" sx={{ fontWeight: "600" }}>
-              solutions
-            </Typography>
-            <KeyboardArrowDown />
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <IconButton
               sx={{
                 color: "#673AB7",
                 borderRadius: "8px",
               }}
             >
-              <AutoAwesome sx={{ fontSize: "1.3rem", mr: 0.8 }} />
-              <Typography variant="caption" sx={{ fontWeight: "600" }}>
+              <AutoAwesome sx={{ fontSize: "1.3rem" }} />
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: "600",
+                  display: { xs: "none", md: "inline-flex" },
+                }}
+              >
                 AI Copilot
               </Typography>
-            </IconButton>
-            <IconButton size="small" color="inherit">
-              <HelpOutline sx={{ color: "text.secondary" }} />
             </IconButton>
             <IconButton size="small" color="inherit">
               <NotificationsActive sx={{ color: "text.secondary" }} />
@@ -110,11 +140,37 @@ const Navbar = () => {
                 fontSize: "0.9rem",
               }}
             >
-              U
+              SS
             </Avatar>
           </Box>
         </Toolbar>
       </AppBar>
+
+      <Drawer
+        anchor="top"
+        open={isDrawerOpen}
+        onClose={handleToggleDrawer(false)}
+        PaperProps={{ sx: { p: 2 } }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton onClick={handleToggleDrawer(false)}>
+            <Close />
+          </IconButton>
+          <InputBase
+            autoFocus
+            placeholder="Search anything..."
+            fullWidth
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
+            sx={{
+              ml: 1,
+              border: "1px solid grey",
+              borderRadius: "8px",
+              p: "4px 8px",
+            }}
+          />
+        </Box>
+      </Drawer>
     </>
   );
 };
