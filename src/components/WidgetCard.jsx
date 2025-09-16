@@ -8,9 +8,10 @@ import {
   Box,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-const DonutChartWidget = React.lazy(() => import("./charts/DonutChartWidget"));
-const BarChartWidget = React.lazy(() => import("./charts/BarChartWidget"));
-const EmptyChart = React.lazy(() => import("./charts/EmptyChart"));
+import { lazy } from "react";
+const DonutChartWidget = lazy(() => import("./charts/DonutChartWidget"));
+const BarChartWidget = lazy(() => import("./charts/BarChartWidget"));
+const EmptyChart = lazy(() => import("./charts/EmptyChart"));
 
 const WidgetCard = ({ widget, categoryName }) => {
   const { dispatch } = useWidget();
